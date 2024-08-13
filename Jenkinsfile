@@ -6,13 +6,15 @@ pipeline {
         DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         FRONTEND_IMAGE = 'anjali2454/frontend:latest'
         BACKEND_IMAGE = 'anjali2454/backend:latest'
+        FRONTEND_PORT = '80'
+        BACKEND_PORT = '3000'
     }
 
     stages {
         stage('Build Frontend Image') {
             steps {
                 script {
-                    docker.build(FRONTEND_IMAGE, "./frontend")
+                    docker.build(FRONTEND_IMAGE, './frontend')
                 }
             }
         }
@@ -20,7 +22,7 @@ pipeline {
         stage('Build Backend Image') {
             steps {
                 script {
-                    docker.build(BACKEND_IMAGE, "./backend")
+                    docker.build(BACKEND_IMAGE, './backend')
                 }
             }
         }
@@ -53,20 +55,27 @@ pipeline {
             steps {
                 script {
                     // Pull the images from Docker Hub
-                    sh 'docker pull ${FRONTEND_IMAGE}'
-                    sh 'docker pull ${BACKEND_IMAGE}'
+                    sh "docker pull ${FRONTEND_IMAGE}"
+                    sh "docker pull ${BACKEND_IMAGE}"
                     
                     // Stop and remove old containers if needed
-                    sh 'docker ps -q --filter "ancestor=${FRONTEND_IMAGE}" | xargs --no-run-if-empty docker stop'
-                    sh 'docker ps -q --filter "ancestor=${BACKEND_IMAGE}" | xargs --no-run-if-empty docker stop'
-                    sh 'docker ps -aq --filter "ancestor=${FRONTEND_IMAGE}" | xargs --no-run-if-empty docker rm'
-                    sh 'docker ps -aq --filter "ancestor=${BACKEND_IMAGE}" | xargs --no-run-if-empty docker rm'
-
+                    sh """
+                    if [ \$(docker ps -q -f "name=frontend-container") ]; then
+                        docker stop frontend-container
+                        docker rm frontend-container
+                    fi
+                    if [ \$(docker ps -q -f "name=backend-container") ]; then
+                        docker stop backend-container
+                        docker rm backend-container
+                    fi
+                    """
+                    
                     // Run new containers
-                    sh 'docker run -d -p 80:80 ${FRONTEND_IMAGE}'
-                    sh 'docker run -d -p 3000:3000 ${BACKEND_IMAGE}'
+                    sh "docker run -d --name frontend-container -p ${FRONTEND_PORT}:${FRONTEND_PORT} ${FRONTEND_IMAGE}"
+                    sh "docker run -d --name backend-container -p ${BACKEND_PORT}:${BACKEND_PORT} ${BACKEND_IMAGE}"
                 }
             }
         }
     }
 }
+
