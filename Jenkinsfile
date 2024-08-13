@@ -59,16 +59,19 @@ pipeline {
                     sh "docker pull ${BACKEND_IMAGE}"
                     
                     // Stop and remove old containers if needed
-                    sh """
-                    if [ \$(docker ps -q -f "name=frontend-container") ]; then
+                    sh '''
+                    echo "Stopping and removing old frontend container if it exists..."
+                    if [ $(docker ps -q -f "name=frontend-container") ]; then
                         docker stop frontend-container
                         docker rm frontend-container
                     fi
-                    if [ \$(docker ps -q -f "name=backend-container") ]; then
+                    
+                    echo "Stopping and removing old backend container if it exists..."
+                    if [ $(docker ps -q -f "name=backend-container") ]; then
                         docker stop backend-container
                         docker rm backend-container
                     fi
-                    """
+                    '''
                     
                     // Run new containers
                     sh "docker run -d --name frontend-container -p ${FRONTEND_PORT}:${FRONTEND_PORT} ${FRONTEND_IMAGE}"
@@ -77,5 +80,10 @@ pipeline {
             }
         }
     }
-}
 
+    post {
+        always {
+            // Optional: Add any post-build actions here if needed
+        }
+    }
+}
