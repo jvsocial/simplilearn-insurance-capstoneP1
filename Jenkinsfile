@@ -67,21 +67,21 @@ pipeline {
                         def frontendOldContainer = sh(script: "docker ps -q --filter 'ancestor=${FRONTEND_IMAGE}:latest'", returnStdout: true).trim()
                         def backendOldContainer = sh(script: "docker ps -q --filter 'ancestor=${BACKEND_IMAGE}:latest'", returnStdout: true).trim()
 
-                        // If old containers exist, stop and remove them, and tag the old image as version:1
+                        // If old containers exist, stop and remove them, and tag the old image as v1
                         if (frontendOldContainer) {
                             sh "docker stop ${frontendOldContainer}"
                             sh "docker rm ${frontendOldContainer}"
-                            // Tag the old image as version:1 and push it
-                            sh "docker tag ${FRONTEND_IMAGE}:latest ${FRONTEND_IMAGE}:version:1"
-                            sh "docker push ${FRONTEND_IMAGE}:version:1"
+                            // Tag the old image as v1 and push it
+                            sh "docker tag ${FRONTEND_IMAGE}:latest ${FRONTEND_IMAGE}:v1"
+                            sh "docker push ${FRONTEND_IMAGE}:v1"
                         }
 
                         if (backendOldContainer) {
                             sh "docker stop ${backendOldContainer}"
                             sh "docker rm ${backendOldContainer}"
-                            // Tag the old image as version:1 and push it
-                            sh "docker tag ${BACKEND_IMAGE}:latest ${BACKEND_IMAGE}:version:1"
-                            sh "docker push ${BACKEND_IMAGE}:version:1"
+                            // Tag the old image as v1 and push it
+                            sh "docker tag ${BACKEND_IMAGE}:latest ${BACKEND_IMAGE}:v1"
+                            sh "docker push ${BACKEND_IMAGE}:v1"
                         }
 
                         // Run new containers with the new images
