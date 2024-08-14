@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS_ID = '3204add4-9cee-4768-a35f-7447d9b893bf'  // Replace with your actual credentials ID
+        DOCKER_CREDENTIALS_ID = '2246c8b9-3997-40b9-bbf3-59b2757ab0bd'  // Replace with your actual credentials ID
         DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         FRONTEND_IMAGE = 'anjali2454/frontend'
         BACKEND_IMAGE = 'anjali2454/backend'
